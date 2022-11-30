@@ -6,7 +6,7 @@ import { Octokit } from "@octokit/rest";
 const octokit = new Octokit({ auth: process.env.GITHUB_PERSONAL_ACCESS_TOKEN })
 
 
-const STOP_DATE = new Date('2022-08-31')
+const STOP_DATE = new Date('2022-10-31')
 const MAX_PAGES = 10
 const PER_PAGE = 100
 const REPO = 'grailed-ios'
@@ -20,7 +20,7 @@ while(dontStop && page <= MAX_PAGES) {
     console.log(`Loading page ${page}...`)
     const pulls = await octokit.rest.pulls.list({
         owner: 'grailed-code',
-        REPO,
+        repo: REPO,
         state: 'all',
         per_page: PER_PAGE,
         page
@@ -38,7 +38,7 @@ while(dontStop && page <= MAX_PAGES) {
     for (let prNumber of prNumbers) {
         const pull = await octokit.rest.pulls.get({
             owner: 'grailed-code',
-            REPO,
+            repo: REPO,
             pull_number: prNumber
         })
 
