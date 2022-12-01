@@ -13,10 +13,10 @@ const REPO = 'grailed-ios'
 
 
 const diffs = []
-let dontStop = true
+let keepGoing = true
 let page = 1
 
-while(dontStop && page <= MAX_PAGES) {
+while(keepGoing && page <= MAX_PAGES) {
     console.log(`Loading page ${page}...`)
     const pulls = await octokit.rest.pulls.list({
         owner: 'grailed-code',
@@ -29,7 +29,7 @@ while(dontStop && page <= MAX_PAGES) {
     const prNumbers = []
     for (let pull of pulls.data) {
         if(new Date(pull.created_at) <= STOP_DATE) {
-            dontStop = false
+            keepGoing = false
             break
         }
         prNumbers.push(pull.number)
