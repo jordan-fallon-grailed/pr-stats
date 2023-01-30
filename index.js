@@ -3,15 +3,24 @@ import { Octokit } from "@octokit/rest";
 // This token is probably expired.
 // Create a new personal access token here: https://github.com/settings/tokens
 // I used classic and only gave it the repo scope
-const octokit = new Octokit({ auth: process.env.GITHUB_PERSONAL_ACCESS_TOKEN })
 
+const REPO = process.env.PR_STATS_REPO
+if(!REPO) {
+    console.log("\n🌵🌵🌵 Please set the PR_STATS_REPO env var! 🌵🌵🌵\n")
+    process.exit()
+}
 
-const STOP_DATE = new Date('2022-10-31')
+const ACCESS_TOKEN = process.env.GITHUB_PERSONAL_ACCESS_TOKEN
+if(!ACCESS_TOKEN) {
+    console.log("\n🌵🌵🌵 Please set the GITHUB_PERSONAL_ACCESS_TOKEN env var! 🌵🌵🌵\n")
+    process.exit()
+}
+
+const OLDEST_DATE = new Date('2022-10-31')
 const MAX_PAGES = 10
 const PER_PAGE = 100
-const REPO = 'grailed-ios'
 
-
+const octokit = new Octokit({ auth: ACCESS_TOKEN })
 const diffs = []
 let keepGoing = true
 let page = 1
@@ -28,7 +37,7 @@ while(keepGoing && page <= MAX_PAGES) {
 
     const prNumbers = []
     for (let pull of pulls.data) {
-        if(new Date(pull.created_at) <= STOP_DATE) {
+        if(new Date(pull.created_at) <= OLDEST_DATE) {
             keepGoing = false
             break
         }
