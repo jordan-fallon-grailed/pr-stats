@@ -30,7 +30,7 @@ while(keepGoing && page <= MAX_PAGES) {
     const pulls = await octokit.rest.pulls.list({
         owner: 'grailed-code',
         repo: REPO,
-        state: 'all',
+        state: 'closed',
         per_page: PER_PAGE,
         page
     })
@@ -41,7 +41,7 @@ while(keepGoing && page <= MAX_PAGES) {
             keepGoing = false
             break
         }
-        prNumbers.push(pull.number)
+        if (pull.merged_at) prNumbers.push(pull.number)
     }
 
     for (let prNumber of prNumbers) {
