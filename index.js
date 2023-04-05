@@ -4,19 +4,19 @@ import { Octokit } from "@octokit/rest";
 // Create a new personal access token here: https://github.com/settings/tokens
 // I used classic and only gave it the repo scope
 
-const REPO = process.env.PR_STATS_REPO
-if(!REPO) {
-    console.log("\n🌵🌵🌵 Please set the PR_STATS_REPO env var! 🌵🌵🌵\n")
-    process.exit()
-}
-
 const ACCESS_TOKEN = process.env.GITHUB_PERSONAL_ACCESS_TOKEN
 if(!ACCESS_TOKEN) {
     console.log("\n🌵🌵🌵 Please set the GITHUB_PERSONAL_ACCESS_TOKEN env var! 🌵🌵🌵\n")
     process.exit()
 }
 
-const OLDEST_DATE = new Date('2022-10-31')
+if(process.argv.length != 4) {
+    console.log('\n🌵🌵🌵 Improper usage! Example: node index.js grailed "2023-02-01" 🌵🌵🌵\n')
+    process.exit()
+}
+
+const REPO = process.argv[2]
+const OLDEST_DATE = new Date(process.argv[3])
 const MAX_PAGES = 10
 const PER_PAGE = 100
 
