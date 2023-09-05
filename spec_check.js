@@ -11,18 +11,20 @@ if(!ACCESS_TOKEN) {
 }
 
 if(process.argv.length != 4) {
-    console.log('\n🌵🌵🌵 Improper usage! Example: node index.js grailed "2023-02-01" 🌵🌵🌵\n')
+    console.log('\n🌵🌵🌵 Improper usage! Example: node spec_check.js grailed jordan-fallon-grailed 🌵🌵🌵\n')
     process.exit()
 }
 
 const REPO = process.argv[2]
-const OLDEST_DATE = new Date(process.argv[3])
+const AUTHOR = process.argv[3]
 const MAX_PAGES = 10
+const PR_COUNT = 50
 const PER_PAGE = 100
+const TEST_FILE_PATTERN = /_spec.rb|test.[jt]s|Tests.swift/
 
 const octokit = new Octokit({ auth: ACCESS_TOKEN })
+let withTests = 0
 const prNumbers = []
-const diffs = []
 
 let keepGoing = true
 let page = 1
@@ -38,31 +40,25 @@ while(keepGoing && page <= MAX_PAGES) {
     })
 
     for (let pull of pulls.data) {
-        if(new Date(pull.created_at) <= OLDEST_DATE) {
-            keepGoing = false
-            break
-        }
-        if (pull.merged_at) prNumbers.push(pull.number)
+        if (pull.merged_at && pull.user.login == AUTHOR) prNumbers.push(pull.number)
     }
+    if(prNumbers.length > PR_COUNT) keepGoing = false
     page++
 }
 
 for (let prNumber of prNumbers) {
-    console.log(`Fetching PR #${prNumber}...`)
-    const pull = await octokit.rest.pulls.get({
+    console.log(`Fetching files for PR #${prNumber}...`)
+    const pull = await octokit.rest.pulls.listFiles({
         owner: 'grailed-code',
         repo: REPO,
         pull_number: prNumber
     })
 
-    const diff = pull.data.additions - pull.data.deletions
-    diffs.push(
-        {
-            url: `https://github.com/grailed-code/${REPO}/pull/${pull.data.number}`,
-            deletions: diff
-        }
-    )
+    const altersTestFiles = pull.data
+        .map(file => file.filename)
+        .some(filename => filename.match(TEST_FILE_PATTERN)?.length > 0)
+
+    if(altersTestFiles) withTests += 1
 }
 
-diffs.sort((a, b) => a.deletions - b.deletions)
-console.log(diffs)
+console.log(`For author ${AUTHOR}, ${withTests}/${prNumbers.length} or ${Math.round(withTests / prNumbers.length * 100)}% of latest PRs contain tests`)
