@@ -9,7 +9,7 @@ const REPO = process.argv[2]
 const AUTHOR = process.argv[3]
 const MAX_PAGES = 10
 const PR_COUNT = 50
-const TEST_FILE_PATTERN = /_spec.rb|test.[jt]s|Tests.swift/
+const TEST_FILE_PATTERN = /_spec.rb|test.[jt]s|.cy.js|Tests.swift/
 
 let withTests = 0
 const prNumbers = []
