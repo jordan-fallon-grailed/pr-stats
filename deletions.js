@@ -1,7 +1,7 @@
 import { fetchNextPageOfPRs, fetchPR } from "./github.js";
 
 if(process.argv.length != 4) {
-    console.log('\n🌵🌵🌵 Improper usage! Example: node index.js grailed "2023-02-01" 🌵🌵🌵\n')
+    console.log('\n🌵🌵🌵 Improper usage! Example: node index.js grailed-ios 2023-09-01 🌵🌵🌵\n')
     process.exit()
 }
 

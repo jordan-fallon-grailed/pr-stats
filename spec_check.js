@@ -7,7 +7,7 @@ if(process.argv.length != 4) {
 
 const REPO = process.argv[2]
 const AUTHOR = process.argv[3]
-const MAX_PAGES = 1
+const MAX_PAGES = 10
 const PR_COUNT = 50
 const TEST_FILE_PATTERN = /_spec.rb|test.[jt]s|Tests.swift/
 
