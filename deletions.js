@@ -1,12 +1,13 @@
 import { fetchNextPageOfPRs, fetchPR } from "./github.js";
 
-if(process.argv.length != 4) {
-    console.log('\n🌵🌵🌵 Improper usage! Example: node index.js grailed-ios 2023-09-01 🌵🌵🌵\n')
+if(process.argv.length != 5) {
+    console.log('\n🌵🌵🌵 Improper usage! Example: node index.js grailed-ios 2024-09-01 2024-10-31 🌵🌵🌵\n')
     process.exit()
 }
 
 const REPO = process.argv[2]
 const OLDEST_DATE = new Date(process.argv[3])
+const NEWEST_DATE = new Date(process.argv[4])
 const MAX_PAGES = 10
 
 const prNumbers = []
@@ -19,7 +20,10 @@ while(keepGoing && page <= MAX_PAGES) {
     const pulls = await fetchNextPageOfPRs(REPO, page)
 
     for (let pull of pulls) {
-        if(new Date(pull.created_at) <= OLDEST_DATE) {
+        const pullDate = new Date(pull.created_at)
+        if(pullDate > NEWEST_DATE) {
+            continue
+        } else if(pullDate <= OLDEST_DATE) {
             keepGoing = false
             break
         }
